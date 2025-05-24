@@ -30,7 +30,7 @@ nuclei -l js.txt -tags token,tokens -es unknown -rl 1000 -c 100 -o nuclei_js_sec
 #### Secret Detection with Katana and Nuclei
 
 ```bash
-katana -u root.txt -ps -ef js,json -o kwa.txt && httpx -l kwa.txt -mc 200 -o wa_js_alive.txt && nuclei -l wa_js_alive.txt -tags token,tokens -es unknown -rl 1000 -c 100 -o nuclei_wayback_secrets.txt
+katana -u root.txt -ps -em js,json -o kwa.txt && httpx -l kwa.txt -mc 200 -o wa_js_alive.txt && nuclei -l wa_js_alive.txt -tags token,tokens -es unknown -rl 1000 -c 100 -o nuclei_wayback_secrets.txt
 ```
 
 #### Trufflehog Analysis
