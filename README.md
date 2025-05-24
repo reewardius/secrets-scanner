@@ -65,7 +65,7 @@ chmod +x secrets-scanner.sh && bash secrets-scanner.sh -f root.txt
 
 - `nuclei_hosts_secrets.txt` – secrets detected in live hosts
 - `nuclei_js_secrets.txt` – secrets found in JavaScript files
-- `nuclei_wayback_secrets.txt` – secrets discovered JavaScript files via wayback analysis
+- `nuclei_wayback_secrets.txt` – secrets discovered in JavaScript files via wayback analysis
 - `trufflehog_results.txt` – secrets extracted by Trufflehog from all collected JS content
 
 #### 🧠 Use Case
