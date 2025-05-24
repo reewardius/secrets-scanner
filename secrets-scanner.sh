@@ -46,7 +46,7 @@ echo "[*] Scanning JS files with Nuclei..."
 nuclei -l "$JS_FILES" -tags token,tokens -es unknown -rl 1000 -c 100 -o "$NUCLEI_JS_SECRETS"
 
 echo "[*] Running wayback analysis with Katana..."
-katana -u "$DOMAINS_FILE" -ps -ef js,json -o "$KWA_OUT"
+katana -u "$DOMAINS_FILE" -ps -em js,json -o "$KWA_OUT"
 httpx -l "$KWA_OUT" -mc 200 -o "$WA_JS_ALIVE"
 nuclei -l "$WA_JS_ALIVE" -tags token,tokens -es unknown -rl 1000 -c 100 -o "$NUCLEI_WAYBACK_SECRETS"
 
