@@ -61,7 +61,12 @@ trufflehog filesystem responses/ > trufflehog_results.txt
 ```bash
 chmod +x secrets-scanner.sh && bash secrets-scanner.sh -f root.txt
 ```
-4. Results will be saved to: `nuclei_secrets.txt` and `trufflehog_results.txt`
+4. Scan results will be saved to the following files:
+
+- `nuclei_hosts_secrets.txt` – secrets detected in live hosts
+- `nuclei_js_secrets.txt` – secrets found in JavaScript files
+- `nuclei_wayback_secrets.txt` – secrets discovered JavaScript files via wayback analysis
+- `trufflehog_results.txt` – secrets extracted by Trufflehog from all collected JS content
 
 #### 🧠 Use Case
 
