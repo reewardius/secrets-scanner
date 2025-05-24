@@ -31,6 +31,25 @@ rm -rf responses/ && \
 httpx -l js.txt -sr -srd responses/ && \
 trufflehog filesystem responses/ > trufflehog_results.txt
 ```
+---
+
+#### Secrets-Scanner Script
+
+1. Make sure the following tools are installed and available in your `$PATH`:
+
+   - `subfinder`
+   - `naabu`
+   - `httpx`
+   - `getJS`
+   - `nuclei`
+   - `trufflehog`
+
+2. Prepare a text file (`root.txt`) containing your target domains, one per line.
+3. Run the script:
+```
+chmod +x secrets-scanner.sh && bash secrets-scanner.sh -f root.txt
+```
+4. Results will be saved to: `nuclei_secrets.txt` and `trufflehog_results.txt`
 
 #### 🧠 Use Case
 
