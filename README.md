@@ -53,7 +53,7 @@ trufflehog filesystem responses/ > trufflehog_results.txt
    - `httpx`
    - `getJS`
    - `nuclei`
-   - `katana`
+   - `katana` version 1.1.0 with passive source support
    - `trufflehog`
 
 2. Prepare a text file (`root.txt`) containing your target domains, one per line.
