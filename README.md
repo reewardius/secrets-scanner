@@ -11,6 +11,10 @@ subfinder -dL root.txt -all -silent -o subs.txt && \
 naabu -l subs.txt -s s -tp 100 -ec -c 50 -o naabu.txt && \
 httpx -l naabu.txt -rl 500 -t 200 -o alive_http_services.txt
 ```
+#### Hosts Scanning
+```bash
+nuclei -l alive_http_services.txt -tags token,tokens -es unknown -rl 1000 -c 100 -o nuclei_hosts_secrets.txt
+```
 #### JavaScript File Collection
 
 Next, JavaScript files are extracted from the live HTTP services:
@@ -21,14 +25,21 @@ getJS -input alive_http_services.txt -output js.txt -complete -threads 200
 
 Nuclei is used to scan the JavaScript files for exposed tokens and other sensitive information:
 ```bash
-nuclei -l js.txt -tags token,tokens -es unknown -rl 1000 -c 100 -o nuclei_secrets.txt
+nuclei -l js.txt -tags token,tokens -es unknown -rl 1000 -c 100 -o nuclei_js_secrets.txt
 ```
+#### Secret Detection with Katana and Nuclei
+
+```bash
+katana -u root.txt -ps -ef js,json -o kwa.txt && httpx -l kwa.txt -mc 200 -o wa_js_alive.txt && nuclei -l wa_js_alive.txt -tags token,tokens -es unknown -rl 1000 -c 100 -o nuclei_wayback_secrets.txt
+```
+
 #### Trufflehog Analysis
 
 The JavaScript files are downloaded and analyzed using Trufflehog to find potential secret leaks:
 ```bash
 rm -rf responses/ && \
-httpx -l js.txt -sr -srd responses/ && \
+cat js.txt wa_js_alive.txt | sort -u > js_all.txt && \
+httpx -l js_all.txt -sr -srd responses/ && \
 trufflehog filesystem responses/ > trufflehog_results.txt
 ```
 ---
@@ -42,6 +53,7 @@ trufflehog filesystem responses/ > trufflehog_results.txt
    - `httpx`
    - `getJS`
    - `nuclei`
+   - `katana`
    - `trufflehog`
 
 2. Prepare a text file (`root.txt`) containing your target domains, one per line.
