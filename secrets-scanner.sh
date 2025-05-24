@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# secrets-scanner full pipeline
+# secrets-scanner pipeline with expanded JS and wayback analysis
 
 # Default values
 DOMAINS_FILE=""
@@ -8,7 +8,12 @@ SUBS="subs.txt"
 NAABU_OUT="naabu.txt"
 ALIVE_HTTP="alive_http_services.txt"
 JS_FILES="js.txt"
-NUCLEI_RESULTS="nuclei_secrets.txt"
+KWA_OUT="kwa.txt"
+WA_JS_ALIVE="wa_js_alive.txt"
+JS_ALL="js_all.txt"
+NUCLEI_HOSTS_SECRETS="nuclei_hosts_secrets.txt"
+NUCLEI_JS_SECRETS="nuclei_js_secrets.txt"
+NUCLEI_WAYBACK_SECRETS="nuclei_wayback_secrets.txt"
 TRUFFLEHOG_RESULTS="trufflehog_results.txt"
 RESPONSES_DIR="responses"
 
@@ -26,26 +31,33 @@ if [[ -z "$DOMAINS_FILE" ]]; then
     exit 1
 fi
 
-# Step 1: Reconnaissance
-echo "[*] Running reconnaissance..."
+echo "[*] Running subdomain and host recon..."
 subfinder -dL "$DOMAINS_FILE" -all -silent -o "$SUBS"
 naabu -l "$SUBS" -s s -tp 100 -ec -c 50 -o "$NAABU_OUT"
 httpx -l "$NAABU_OUT" -rl 500 -t 200 -o "$ALIVE_HTTP"
 
-# Step 2: Get JavaScript files
-echo "[*] Extracting JavaScript files..."
+echo "[*] Scanning live hosts for secrets with Nuclei..."
+nuclei -l "$ALIVE_HTTP" -tags token,tokens -es unknown -rl 1000 -c 100 -o "$NUCLEI_HOSTS_SECRETS"
+
+echo "[*] Collecting JavaScript files from alive hosts..."
 getJS -input "$ALIVE_HTTP" -output "$JS_FILES" -complete -threads 200
 
-# Step 3: Scan for secrets with Nuclei
-echo "[*] Scanning JS with Nuclei for secrets..."
-nuclei -l "$JS_FILES" -tags token,tokens -es unknown -rl 1000 -c 100 -o "$NUCLEI_RESULTS"
+echo "[*] Scanning JS files with Nuclei..."
+nuclei -l "$JS_FILES" -tags token,tokens -es unknown -rl 1000 -c 100 -o "$NUCLEI_JS_SECRETS"
 
-# Step 4: Trufflehog analysis
-echo "[*] Running Trufflehog scan..."
+echo "[*] Running wayback analysis with Katana..."
+katana -u "$DOMAINS_FILE" -ps -ef js,json -o "$KWA_OUT"
+httpx -l "$KWA_OUT" -mc 200 -o "$WA_JS_ALIVE"
+nuclei -l "$WA_JS_ALIVE" -tags token,tokens -es unknown -rl 1000 -c 100 -o "$NUCLEI_WAYBACK_SECRETS"
+
+echo "[*] Running Trufflehog on combined JS sources..."
 rm -rf "$RESPONSES_DIR"
-httpx -l "$JS_FILES" -sr -srd "$RESPONSES_DIR"
+cat "$JS_FILES" "$WA_JS_ALIVE" | sort -u > "$JS_ALL"
+httpx -l "$JS_ALL" -sr -srd "$RESPONSES_DIR"
 trufflehog filesystem "$RESPONSES_DIR" > "$TRUFFLEHOG_RESULTS"
 
-echo "[✔] Pipeline completed. Results saved to:"
-echo " - $NUCLEI_RESULTS"
-echo " - $TRUFFLEHOG_RESULTS"
+echo "[✔] Scan complete. Results:"
+echo " - Host secrets: $NUCLEI_HOSTS_SECRETS ($(wc -l < "$NUCLEI_HOSTS_SECRETS") lines)"
+echo " - JS secrets: $NUCLEI_JS_SECRETS ($(wc -l < "$NUCLEI_JS_SECRETS") lines)"
+echo " - Wayback secrets: $NUCLEI_WAYBACK_SECRETS ($(wc -l < "$NUCLEI_WAYBACK_SECRETS") lines)"
+echo " - Trufflehog output: $TRUFFLEHOG_RESULTS ($(wc -l < "$TRUFFLEHOG_RESULTS") lines)"
