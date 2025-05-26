@@ -53,7 +53,7 @@ trufflehog filesystem responses/ > trufflehog_results.txt
    - `httpx`
    - `getJS`
    - `nuclei`
-   - `katana` version 1.1.0 with passive source support
+   - `katana` -> `go install -v github.com/projectdiscovery/katana/cmd/katana@v1.1.0` // Version with Passive Source Support
    - `trufflehog`
 
 2. Prepare a text file (`root.txt`) containing your target domains, one per line.
