@@ -27,6 +27,8 @@ LOG_FILE="scan_$(date +%Y%m%d_%H%M%S).log"
 VERBOSE=false
 SKIP_WAYBACK=false
 
+rm -f *.log
+
 # Logging function
 log() {
     local level=$1
@@ -122,7 +124,7 @@ fi
 check_dependencies
 
 # Create output directory structure
-mkdir -p results/{nuclei,js,wayback,responses}
+rm -rf results/ && mkdir -p results/{nuclei,js,wayback,responses}
 cd results || exit 1
 
 log "INFO" "Starting secrets scanning pipeline for $(wc -l < "../$DOMAINS_FILE") domains"
@@ -266,39 +268,39 @@ js_secrets=$(wc -l < "nuclei/$NUCLEI_JS_SECRETS" 2>/dev/null || echo "0")
 wayback_secrets=$(wc -l < "nuclei/$NUCLEI_WAYBACK_SECRETS" 2>/dev/null || echo "0")
 trufflehog_count=$(wc -l < "$TRUFFLEHOG_RESULTS" 2>/dev/null || echo "0")
 
-echo "📊 Scan Statistics:"
-echo "  • Subdomains discovered: $(wc -l < "$SUBS" 2>/dev/null || echo "0")"
-echo "  • Open ports found: $(wc -l < "$NAABU_OUT" 2>/dev/null || echo "0")"
-echo "  • Live HTTP services: $(wc -l < "$ALIVE_HTTP" 2>/dev/null || echo "0")"
-echo "  • JavaScript files collected: $(wc -l < "js/$JS_FILES" 2>/dev/null || echo "0")"
+echo "рџ“Љ Scan Statistics:"
+echo "  вЂў Subdomains discovered: $(wc -l < "$SUBS" 2>/dev/null || echo "0")"
+echo "  вЂў Open ports found: $(wc -l < "$NAABU_OUT" 2>/dev/null || echo "0")"
+echo "  вЂў Live HTTP services: $(wc -l < "$ALIVE_HTTP" 2>/dev/null || echo "0")"
+echo "  вЂў JavaScript files collected: $(wc -l < "js/$JS_FILES" 2>/dev/null || echo "0")"
 if [ "$SKIP_WAYBACK" = false ]; then
-    echo "  • Wayback JS files found: $(wc -l < "wayback/$WA_JS_ALIVE" 2>/dev/null || echo "0")"
+    echo "  вЂў Wayback JS files found: $(wc -l < "wayback/$WA_JS_ALIVE" 2>/dev/null || echo "0")"
 fi
 echo ""
 
-echo "🔍 Secrets Discovery Results:"
-echo "  • Host-based secrets: $host_secrets (nuclei/$NUCLEI_HOSTS_SECRETS)"
-echo "  • JavaScript secrets: $js_secrets (nuclei/$NUCLEI_JS_SECRETS)"
+echo "рџ”Ќ Secrets Discovery Results:"
+echo "  вЂў Host-based secrets: $host_secrets (nuclei/$NUCLEI_HOSTS_SECRETS)"
+echo "  вЂў JavaScript secrets: $js_secrets (nuclei/$NUCLEI_JS_SECRETS)"
 if [ "$SKIP_WAYBACK" = false ]; then
-    echo "  • Wayback secrets: $wayback_secrets (nuclei/$NUCLEI_WAYBACK_SECRETS)"
+    echo "  вЂў Wayback secrets: $wayback_secrets (nuclei/$NUCLEI_WAYBACK_SECRETS)"
 fi
-echo "  • Trufflehog findings: $trufflehog_count ($TRUFFLEHOG_RESULTS)"
+echo "  вЂў Trufflehog findings: $trufflehog_count ($TRUFFLEHOG_RESULTS)"
 echo ""
 
 total_secrets=$((host_secrets + js_secrets + wayback_secrets + trufflehog_count))
-echo "🎯 Total potential secrets found: $total_secrets"
+echo "рџЋЇ Total potential secrets found: $total_secrets"
 echo ""
 
-echo "📁 Output files location: $(pwd)"
-echo "📝 Detailed log: $LOG_FILE"
+echo "рџ“Ѓ Output files location: $(pwd)"
+echo "рџ“ќ Detailed log: $LOG_FILE"
 echo ""
 
 if [ "$total_secrets" -gt 0 ]; then
-    echo "⚠️  Remember to:"
-    echo "  • Validate all findings manually"
-    echo "  • Check for false positives"
-    echo "  • Handle sensitive data responsibly"
-    echo "  • Follow responsible disclosure practices"
+    echo "вљ пёЏ  Remember to:"
+    echo "  вЂў Validate all findings manually"
+    echo "  вЂў Check for false positives"
+    echo "  вЂў Handle sensitive data responsibly"
+    echo "  вЂў Follow responsible disclosure practices"
 fi
 
 log "SUCCESS" "Pipeline completed successfully with $total_secrets total findings"
