@@ -1,7 +1,17 @@
 # secrets-scanner
 #### 📌 Overview
 
-Secrets-scanner is an automated pipeline designed to discover secret leaks in JavaScript files from live web assets identified during reconnaissance. This tool is ideal for security researchers and bug bounty hunters looking to streamline their secret detection process.
+A comprehensive automated pipeline for discovering secrets, tokens, and sensitive information across web applications using multiple attack vectors and reconnaissance techniques.
+
+#### 🚀 **Features**
+
+- **Multi-Vector Scanning:** Combines subdomain enumeration, port scanning, HTTP discovery, and secrets detection
+- **JavaScript Analysis:** Deep analysis of JavaScript files from both live hosts and Wayback Machine
+- **Historical Data Mining:** Leverages Wayback Machine for finding exposed secrets in historical JS files
+- **Advanced Secret Detection:** Uses multiple tools (Nuclei, TruffleHog) for comprehensive coverage
+- **Automated Workflow:** End-to-end automation from domain input to detailed reporting
+- **Professional Logging:** Color-coded output with detailed logging and progress tracking
+- **Error Resilience:** Robust error handling and graceful failure recovery
 
 #### 🚀 Recon (Reconnaissance)
 
@@ -59,14 +69,57 @@ trufflehog filesystem responses/ > trufflehog_results.txt
 2. Prepare a text file (`root.txt`) containing your target domains, one per line.
 3. Run the script:
 ```bash
-chmod +x secrets-scanner.sh && bash secrets-scanner.sh -f root.txt
+chmod +x advanced-secrets-scanner.sh && bash advanced-secrets-scanner.sh -f root.txt
 ```
-4. Scan results will be saved to the following files:
 
-- `nuclei_hosts_secrets.txt` – secrets detected in live hosts
-- `nuclei_js_secrets.txt` – secrets found in JavaScript files
-- `nuclei_wayback_secrets.txt` – secrets discovered in JavaScript files via wayback analysis
-- `trufflehog_results.txt` – secrets extracted by Trufflehog from all collected JS content
+#### 📁 Output Structure
+```bash
+results/
+├── scan_YYYYMMDD_HHMMSS.log          # Detailed execution log
+├── subs.txt                          # Discovered subdomains
+├── naabu.txt                         # Open ports
+├── alive_http_services.txt           # Live HTTP services
+├── nuclei/
+│   ├── nuclei_hosts_secrets.txt      # Secrets found on hosts
+│   ├── nuclei_js_secrets.txt         # Secrets found in JS files
+│   └── nuclei_wayback_secrets.txt    # Secrets found in Wayback JS
+├── js/
+│   └── js.txt                        # Collected JavaScript files
+├── wayback/
+│   ├── kwa.txt                       # Wayback URLs
+│   └── wa_js_alive.txt              # Live Wayback JS files
+├── responses/                        # Downloaded JS files for analysis
+└── trufflehog_results.txt           # TruffleHog findings
+```
+
+#### 🎨 Sample Output
+```bash
+[SUCCESS] Scan completed! Generating summary report...
+
+==================================
+    SECRETS SCAN SUMMARY REPORT
+==================================
+
+📊 Scan Statistics:
+  • Subdomains discovered: 696
+  • Open ports found: 410
+  • Live HTTP services: 17
+  • JavaScript files collected: 32
+  • Wayback JS files found: 1
+
+🔍 Secrets Discovery Results:
+  • Host-based secrets: 0 (nuclei/nuclei_hosts_secrets.txt)
+  • JavaScript secrets: 0 (nuclei/nuclei_js_secrets.txt)
+  • Wayback secrets: 0 (nuclei/nuclei_wayback_secrets.txt)
+  • Trufflehog findings: 0 (trufflehog_results.txt)
+
+🎯 Total potential secrets found: 0
+
+📁 Output files location: /home/ec2-user/secrets-scanner/results
+📝 Detailed log: scan_20250526_213737.log
+
+[SUCCESS] Pipeline completed successfully with 0 total findings
+```
 
 #### 🧠 Use Case
 
