@@ -227,7 +227,7 @@ if [ "$SKIP_HEADLESS" = false ]; then
     log "INFO" "Step 7/8: Running headless crawl analysis with Katana..."
     log "INFO" "This may take longer as it uses a headless browser..."
     
-    if katana -u "$ALIVE_HTTP" -em js,json -headless -o "headless/$HEADLESS_CRAWL" -silent; then
+    if katana -u "$ALIVE_HTTP" -em js,json -headless -nos -o "headless/$HEADLESS_CRAWL" -silent; then
         headless_count=$(wc -l < "headless/$HEADLESS_CRAWL" 2>/dev/null || echo "0")
         log "SUCCESS" "Found $headless_count URLs via headless crawling"
         
