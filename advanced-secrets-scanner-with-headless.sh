@@ -233,7 +233,7 @@ if [ "$SKIP_HEADLESS" = false ]; then
         
         if [ "$headless_count" -gt 0 ]; then
             log "INFO" "Scanning headless crawl results with Nuclei..."
-            if nuclei -l "headless/$HEADLESS_CRAWL" -tags token,tokens -es unknown -rl 1000 -c 100 -o "nuclei/$NUCLEI_HEADLESS_SECRETS" -silent; then
+            if nuclei -l "headless/$HEADLESS_CRAWL" -tags token,tokens -es unknown -rl 1000 -c 100 -ct 1m -o "nuclei/$NUCLEI_HEADLESS_SECRETS" -silent; then
                 headless_secrets=$(wc -l < "nuclei/$NUCLEI_HEADLESS_SECRETS" 2>/dev/null || echo "0")
                 log "SUCCESS" "Headless crawl scan completed - found $headless_secrets potential secrets"
             else
