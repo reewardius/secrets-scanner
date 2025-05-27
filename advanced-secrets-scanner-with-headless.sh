@@ -202,7 +202,7 @@ if [ "$SKIP_WAYBACK" = false ]; then
         
         if [ "$wayback_count" -gt 0 ]; then
             log "INFO" "Filtering live wayback JavaScript files..."
-            if httpx -l "wayback/$KWA_OUT" -mc 200 -o "wayback/$WA_JS_ALIVE" -silent; then
+            if httpx -l "wayback/$KWA_OUT" -rl 500 -t 200 -mc 200 -o "wayback/$WA_JS_ALIVE" -silent; then
                 wa_js_count=$(wc -l < "wayback/$WA_JS_ALIVE" 2>/dev/null || echo "0")
                 log "SUCCESS" "Found $wa_js_count live wayback JS files"
                 
@@ -279,7 +279,7 @@ fi
 
 if [ "$combined_js_count" -gt 0 ]; then
     log "INFO" "Downloading $combined_js_count JavaScript/JSON files for deep analysis..."
-    if httpx -l "$JS_ALL" -sr -srd "$RESPONSES_DIR" -silent; then
+    if httpx -l "$JS_ALL" -rl 500 -t 200 -sr -srd "$RESPONSES_DIR" -silent; then
         log "SUCCESS" "JavaScript/JSON files downloaded"
         
         log "INFO" "Running Trufflehog filesystem scan..."
